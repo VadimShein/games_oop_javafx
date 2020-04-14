@@ -21,11 +21,19 @@ public class Logic {
         this.figures[this.index++] = figure;
     }
 
-    public boolean move(Cell source, Cell dest) {
+    public boolean move(Cell source, Cell dest) throws IllegalStateException {
         boolean rst = false;
-        int index = this.findBy(source);
+        int index = this.findBy(source); //1
         if (index != -1) {
-            Cell[] steps = this.figures[index].way(source, dest);
+            Cell[] steps = this.figures[index].way(source, dest); //2
+            for (int i = 0; i < steps.length; i++) {
+                int empty = this.findBy(steps[i]);
+                if (empty != -1) {
+                    throw new IllegalStateException(
+                            String.format("impossible to move from %s to %s", source, dest)
+                    );
+                }
+            }
             if (steps.length > 0 && steps[steps.length - 1].equals(dest)) {
                 rst = true;
                 this.figures[index] = this.figures[index].copy(dest);
@@ -45,6 +53,8 @@ public class Logic {
         int rst = -1;
         for (int index = 0; index != this.figures.length; index++) {
             if (this.figures[index] != null && this.figures[index].position().equals(cell)) {
+                System.out.println(this.figures[index]);
+
                 rst = index;
                 break;
             }
